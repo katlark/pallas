@@ -1,0 +1,141 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id    String @id @default(cuid())
+  email String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  password Password?
+  passwordResetTokens PasswordResetToken[]
+  decks    Deck[]
+  progress CardProgress[]
+  studies  Study[]
+}
+
+model Password {
+  hash String
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String @unique
+}
+
+model PasswordResetToken {
+  id String @id @default(cuid())
+  tokenHash String @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String
+
+  @@index([userId, expiresAt])
+  @@index([expiresAt])
+}
+
+model Deck {
+  id    String @id @default(cuid())
+  title String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String
+
+  cards Card[]
+  studies Study[]
+
+  @@index([userId, updatedAt])
+}
+
+model Card {
+  id    String @id @default(cuid())
+  front String
+  back  String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  deck   Deck   @relation(fields: [deckId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  deckId String
+  progress CardProgress[]
+  studyItems StudyItem[]
+
+  @@index([deckId, createdAt])
+}
+
+model CardProgress {
+  id String @id @default(cuid())
+
+  knowledgeLevel Int      @default(0)
+  lastReviewedAt DateTime?
+  nextReviewAt   DateTime @default(now())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String
+  card   Card   @relation(fields: [cardId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  cardId String
+
+  @@unique([userId, cardId])
+  @@index([userId, nextReviewAt])
+  @@index([cardId])
+}
+
+model Study {
+  id String @id @default(cuid())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  completedAt DateTime?
+
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String
+  deck   Deck @relation(fields: [deckId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  deckId String
+
+  items StudyItem[]
+
+  @@index([userId, deckId, createdAt])
+  @@index([deckId, createdAt])
+  @@index([userId, deckId, completedAt, createdAt])
+}
+
+model StudyItem {
+  id String @id @default(cuid())
+
+  chapterNumber Int
+  position      Int
+
+  frontSnapshot String
+  backSnapshot  String
+  knowledgeAtStart Int @default(0)
+  knowledgeAfter   Int?
+
+  reviewedAt DateTime?
+  outcome    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  study   Study @relation(fields: [studyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  studyId String
+  card    Card? @relation(fields: [cardId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  cardId  String?
+
+  @@unique([studyId, position])
+  @@index([studyId, chapterNumber, position])
+  @@index([studyId, reviewedAt])
+  @@index([cardId])
+}

@@ -1,0 +1,10 @@
+-- CreateTable
+CREATE TABLE "Card" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "front" TEXT NOT NULL,
+    "back" TEXT NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    "deckId" TEXT NOT NULL,
+    CONSTRAINT "Card_deckId_fkey" FOREIGN KEY ("deckId") REFERENCES "Deck" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
