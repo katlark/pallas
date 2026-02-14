@@ -1,7 +1,4 @@
-/node_modules
-*.log
-.DS_Store
-.env
-/.cache
-/public/build
-/build
+.react-router
+build
+node_modules
+README.md
