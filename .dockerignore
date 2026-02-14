@@ -1,31 +1,7 @@
-# Dependency/Build Directories
-node_modules
-npm-debug.log
-.npm
-
-# Project Files
-.git
-.gitignore
-.dockerignore
-Dockerfile
-fly.toml
-
-# Environment/Configuration Files
-.env
+/node_modules
+*.log
 .DS_Store
-
-# Development/Testing files and directories
-test
-tests
-__tests__
-docs
-coverage
-.nyc_output
-tmp
-*~
-
-# IDE files
-.vscode
-.idea
-*.swp
-*.swo
+.env
+/.cache
+/public/build
+/build
