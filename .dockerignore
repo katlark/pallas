@@ -13,7 +13,6 @@ fly.toml
 # Environment/Configuration Files
 .env
 .DS_Store
-*.log
 
 # Development/Testing files and directories
 test
