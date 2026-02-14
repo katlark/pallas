@@ -22,5 +22,7 @@ COPY --from=production-dependencies-env /app/node_modules /app/node_modules
 COPY --from=build-env /app/build /app/build
 COPY --from=build-env /app/generated /app/generated
 COPY --from=build-env /app/prisma /app/prisma
+COPY ./dbsetup.js /app/dbsetup.js
+COPY ./litestream.yml /app/litestream.yml
 WORKDIR /app
 CMD ["npm", "run", "start"]
